@@ -1,4 +1,5 @@
 use crate::models::{AnalyzedStats, MailingListStats};
+use crate::analysis::find_unanswered_emails;
 
 #[derive(Default, Debug)]
 pub struct DisplayConfig {
@@ -8,6 +9,7 @@ pub struct DisplayConfig {
     pub show_daily_activity: bool,
     pub show_averages: bool,
     pub show_summary: bool,
+    pub show_unanswered: bool,
     pub verbose: bool,
 }
 
@@ -48,6 +50,11 @@ impl DisplayConfig {
 
     pub fn verbose(mut self, verbose: bool) -> Self {
         self.verbose = verbose;
+        self
+    }
+
+    pub fn with_unanswered_emails(mut self, show: bool) -> Self {
+        self.show_unanswered = show;
         self
     }
 }
@@ -134,6 +141,29 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
             analyzed_stats.total_emails,
             analyzed_stats.total_threads
         );
+    }
+
+    if config.show_unanswered {
+        println!("\nUnanswered Emails:");
+        println!("-----------------");
+        let unanswered = find_unanswered_emails(&stats.emails, &stats.thread_struct);
+        if unanswered.is_empty() {
+            println!("No unanswered emails found.");
+        } else {
+            let len = unanswered.len();
+            for email in unanswered {
+                if config.verbose {
+                    println!("Subject: {}", email.subject);
+                    println!("From: {}", email.from);
+                    println!("Date: {}", email.date);
+                    println!("Message-ID: {}", email.message_id);
+                    println!();
+                } else {
+                    println!("- {} (from: {}, date: {})", email.subject, email.from, email.date);
+                }
+            }
+            println!("\nTotal unanswered emails: {}", len);
+        }
     }
 
     log::debug!("Finished displaying analysis");

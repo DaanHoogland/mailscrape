@@ -38,6 +38,9 @@ struct Args {
     #[arg(long)]
     show_averages: bool,
 
+    #[arg(long)]
+    show_unanswered: bool,
+
     #[arg(short, long)]
     verbose: bool,
 }
@@ -64,6 +67,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .with_daily_activity(args.show_daily)
         .with_averages(args.show_averages)
         .with_summary(true)
+        .with_unanswered_emails(args.show_unanswered)
         .verbose(args.verbose);
 
     display_analysis(&analyzed_stats, &stats, &display_config);
