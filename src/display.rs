@@ -83,7 +83,7 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
             if config.verbose {
                 println!("Subject: {}", email.subject);
                 println!("From: {}", email.from);
-                println!("Date: {}", email.date);
+                println!("Date: {:?}", email.date);
                 println!("Message-ID: {}", email.message_id);
                 println!();
             } else {
@@ -95,7 +95,7 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
     if config.show_threads {
         println!("\nThreads:");
         println!("--------");
-        for thread in &stats.thread_struct {
+        for thread in stats.thread_struct.iter() {
             if config.verbose {
                 println!("Thread: {}", thread.subject);
                 println!("Depth: {}", thread.nest);
@@ -146,7 +146,7 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
     if config.show_unanswered {
         println!("\nUnanswered Emails:");
         println!("-----------------");
-        let unanswered = find_unanswered_emails(&stats.emails, &stats.thread_struct);
+        let unanswered = find_unanswered_emails(&stats.emails);
         if unanswered.is_empty() {
             println!("No unanswered emails found.");
         } else {
@@ -155,11 +155,11 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
                 if config.verbose {
                     println!("Subject: {}", email.subject);
                     println!("From: {}", email.from);
-                    println!("Date: {}", email.date);
+                    println!("Date: {:?}", email.date);
                     println!("Message-ID: {}", email.message_id);
                     println!();
                 } else {
-                    println!("- {} (from: {}, date: {})", email.subject, email.from, email.date);
+                    println!("- {} (from: {}, date: {:?})", email.subject, email.from, email.date);
                 }
             }
             println!("\nTotal unanswered emails: {}", len);

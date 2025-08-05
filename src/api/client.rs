@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::models::*;
 use std::error::Error;
 use crate::models::stats::MailingListStats;
+use crate::models::thread::ThreadStructValue;
 
 #[derive(Deserialize, Debug)]
 pub struct MailingListResponse {
@@ -22,7 +23,7 @@ pub struct MailingListResponse {
     #[serde(default)]
     pub emails: Vec<Email>,
     #[serde(default)]
-    pub thread_struct: Vec<ThreadStruct>,
+    pub thread_struct: ThreadStructValue,
     #[serde(default)]
     pub active_months: HashMap<String, i32>,
 }

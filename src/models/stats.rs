@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use super::{email::Email, thread::ThreadStruct};
+use super::{email::Email, thread::ThreadStructValue};
 
 #[derive(Debug)]
 pub struct MailingListStats {
@@ -11,7 +11,7 @@ pub struct MailingListStats {
     pub list_name: String,
     pub domain: String,
     pub emails: Vec<Email>,
-    pub thread_struct: Vec<ThreadStruct>,
+    pub thread_struct: ThreadStructValue,
     pub active_months: HashMap<String, i32>,
 }
 
