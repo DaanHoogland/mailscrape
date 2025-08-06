@@ -1,6 +1,12 @@
 # mailscrape
 Get statistics for an Apache mailing list from a pony list site
 
+<!-- Labels: -->
+[![Build Status](https://github.com/DaanHoogland/mailscrape/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/DaanHoogland/mailscrape/actions/workflows/build.yml)
+[![License Check](https://github.com/apache/DaanHoogland/mailscrape/workflows/rat.yml/badge.svg?branch=main)](https://github.com/DaanHoogland/mailscrape/actions/workflows/rat.yml)
+[![codecov](https://codecov.io/gh/DaanHoogland/mailscrape/branch/main/graph/badge.svg)](https://codecov.io/gh/DaanHoogland/mailscrape)
+
+
 ## Description
 This tool fetches and analyzes statistics from Apache mailing lists, providing detailed information about email activity, participants, and threads over a specified time period.
 
