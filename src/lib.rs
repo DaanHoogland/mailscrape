@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-pub mod models;
-pub mod api;
 pub mod analysis;
+pub mod api;
 pub mod display;
+pub mod models;

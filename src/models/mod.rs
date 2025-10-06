@@ -17,9 +17,9 @@
  * under the License.
  */
 pub mod email;
-pub mod thread;
 pub mod stats;
+pub mod thread;
 
 pub use email::Email;
-pub use thread::{ThreadStructValue,ThreadStruct, Participant};
-pub use stats::{MailingListStats, AnalyzedStats, ListInfo};
+pub use stats::{AnalyzedStats, ListInfo, MailingListStats};
+pub use thread::{Participant, ThreadStruct, ThreadStructValue};

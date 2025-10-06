@@ -20,10 +20,10 @@ use clap::Parser;
 use std::error::Error;
 
 use mailscrape::{
-    models::stats::MailingListStats,
-    api::client::fetch_mailing_list_data,
     analysis::stats_analyzer::analyze_stats,
-    display::{DisplayConfig, display_analysis}
+    api::client::fetch_mailing_list_data,
+    display::{DisplayConfig, display_analysis},
+    models::stats::MailingListStats,
 };
 
 #[derive(Parser)]
@@ -68,12 +68,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
     let args = Args::parse();
 
-    let json_data = fetch_mailing_list_data(
-        &args.start_date,
-        &args.end_date,
-        &args.list,
-        &args.domain,
-    ).await?;
+    let json_data =
+        fetch_mailing_list_data(&args.start_date, &args.end_date, &args.list, &args.domain).await?;
 
     let stats: MailingListStats = json_data.into();
     let analyzed_stats = analyze_stats(&stats);

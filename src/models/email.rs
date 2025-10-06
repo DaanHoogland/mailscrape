@@ -57,14 +57,14 @@ pub struct Attachment {
     #[serde(default)]
     pub content_type: String,
     #[serde(default)]
-    pub size:  i64,
+    pub size: i64,
     #[serde(default)]
     pub hash: String,
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::models::email::{Email, Attachment};
+    use crate::models::email::{Attachment, Email};
 
     #[test]
     fn test_email_all_fields() {

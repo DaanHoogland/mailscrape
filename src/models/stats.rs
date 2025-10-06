@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-use std::collections::HashMap;
 use super::{email::Email, thread::ThreadStructValue};
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct MailingListStats {
@@ -55,10 +55,10 @@ pub struct ListInfo {
 
 #[cfg(test)]
 mod tests {
-    use crate::models::stats::{MailingListStats, ListInfo};
-    use crate::models::thread::{ThreadStruct, ThreadStructValue};
-    use crate::models::email::Email;
     use crate::analysis::stats_analyzer::analyze_stats;
+    use crate::models::email::Email;
+    use crate::models::stats::{ListInfo, MailingListStats};
+    use crate::models::thread::{ThreadStruct, ThreadStructValue};
     use std::collections::HashMap;
 
     #[test]

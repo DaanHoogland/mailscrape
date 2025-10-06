@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-pub mod stats_analyzer;
 pub mod email_analyzer;
+pub mod stats_analyzer;
 
-pub use stats_analyzer::analyze_stats;
 pub use email_analyzer::find_unanswered_emails;
+pub use stats_analyzer::analyze_stats;

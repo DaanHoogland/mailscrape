@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-use std::collections::HashSet;
 use crate::models::Email;
+use std::collections::HashSet;
 
 pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
     let mut emails_with_replies = HashSet::new();
@@ -26,11 +26,17 @@ pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
     let mut reply_emails = HashSet::new();
     for email in emails {
         if !email.in_reply_to.is_empty() || email.subject.starts_with("Re: ") {
-            let email_id = email.message_id.trim_start_matches('<').trim_end_matches('>');
+            let email_id = email
+                .message_id
+                .trim_start_matches('<')
+                .trim_end_matches('>');
             reply_emails.insert(email_id.to_string());
 
             if !email.in_reply_to.is_empty() {
-                let parent_id = email.in_reply_to.trim_start_matches('<').trim_end_matches('>');
+                let parent_id = email
+                    .in_reply_to
+                    .trim_start_matches('<')
+                    .trim_end_matches('>');
                 emails_with_replies.insert(parent_id.to_string());
             }
         }
@@ -43,7 +49,10 @@ pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
 
     for email in emails {
         if !email.in_reply_to.is_empty() {
-            let parent_id = email.in_reply_to.trim_start_matches('<').trim_end_matches('>');
+            let parent_id = email
+                .in_reply_to
+                .trim_start_matches('<')
+                .trim_end_matches('>');
             emails_with_replies.insert(parent_id.to_string());
             log::debug!("Found reply to: {}", parent_id);
         }
@@ -56,7 +65,10 @@ pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
     let unanswered = emails
         .iter()
         .filter(|email| {
-            let message_id = email.message_id.trim_start_matches('<').trim_end_matches('>');
+            let message_id = email
+                .message_id
+                .trim_start_matches('<')
+                .trim_end_matches('>');
 
             // An email is considered unanswered if:
             // 1. It's not a reply itself (doesn't start with Re: and has no in_reply_to)
@@ -67,8 +79,11 @@ pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
             let is_unanswered = is_not_reply && has_no_replies;
 
             if is_unanswered {
-                log::debug!("Found unanswered email: '{}' with message-id: {}",
-                    email.subject, message_id);
+                log::debug!(
+                    "Found unanswered email: '{}' with message-id: {}",
+                    email.subject,
+                    message_id
+                );
             }
 
             is_unanswered
@@ -109,11 +124,7 @@ mod tests {
     #[test]
     fn test_create_test_email_helper() {
         // Test that the helper function creates proper email objects
-        let email = create_test_email(
-            "<msg1@example.com>",
-            "Test Subject",
-            "<parent@example.com>"
-        );
+        let email = create_test_email("<msg1@example.com>", "Test Subject", "<parent@example.com>");
 
         // Verify the email was created correctly
         assert_eq!(email.message_id, "<msg1@example.com>");
@@ -126,11 +137,7 @@ mod tests {
         assert_eq!(email.mid, "<msg1@example.com>");
 
         // Create another email with different values
-        let email2 = create_test_email(
-            "<msg2@example.com>",
-            "Another Subject",
-            ""
-        );
+        let email2 = create_test_email("<msg2@example.com>", "Another Subject", "");
 
         // Verify it has the correct values
         assert_eq!(email2.message_id, "<msg2@example.com>");

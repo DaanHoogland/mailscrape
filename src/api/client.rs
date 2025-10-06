@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-use std::collections::HashMap;
-use reqwest;
-use serde::Deserialize;
-use crate::models::*;
-use std::error::Error;
 use crate::models::stats::MailingListStats;
 use crate::models::thread::ThreadStructValue;
+use crate::models::*;
+use reqwest;
+use serde::Deserialize;
+use std::collections::HashMap;
+use std::error::Error;
 
 #[derive(Deserialize, Debug)]
 pub struct MailingListResponse {
@@ -68,9 +68,9 @@ pub async fn fetch_mailing_list_data(
         "https://lists.apache.org/api/stats.lua?list={}&domain={}&d=dfr={}|dto={}",
         list, domain, start_date, end_date
     );
-    
+
     log::debug!("Requesting URL: {}", url);
-    
+
     let client = reqwest::Client::new();
     let response = client.get(&url).send().await?;
 
@@ -79,7 +79,11 @@ pub async fn fetch_mailing_list_data(
 
     let data: MailingListResponse = serde_json::from_str(&text)?;
     if let Some(email) = data.emails.first() {
-        log::debug!("First email example: epoch={}, date={:?}", email.epoch, email.date);
+        log::debug!(
+            "First email example: epoch={}, date={:?}",
+            email.epoch,
+            email.date
+        );
     }
     Ok(data)
 }
@@ -89,22 +93,24 @@ impl From<MailingListResponse> for MailingListStats {
         use chrono::{TimeZone, Utc};
 
         let (period_start, period_end) = if let Some(search_params) = response.search_params {
-            let period_dates = search_params.d.split("|")
+            let period_dates = search_params
+                .d
+                .split("|")
                 .map(|s| s.replace("dfr=", "").replace("dto=", ""))
                 .collect::<Vec<String>>();
             (
                 period_dates.get(0).unwrap_or(&String::new()).to_string(),
-                period_dates.get(1).unwrap_or(&String::new()).to_string()
+                period_dates.get(1).unwrap_or(&String::new()).to_string(),
             )
         } else {
             (String::new(), String::new())
         };
 
         // Create a vector of emails with dates filled in from the epoch
-        let emails_with_dates: Vec<Email> = response.emails
+        let emails_with_dates: Vec<Email> = response
+            .emails
             .into_iter()
             .map(|mut email| {
-
                 // Always convert epoch to date string, whether date is None or not
                 if email.epoch > 0 {
                     // Convert the epoch to a formatted date string
@@ -113,7 +119,9 @@ impl From<MailingListResponse> for MailingListStats {
                         // Log both the original date and our calculated date
                         log::debug!(
                             "Email date: original={:?}, from epoch={}, calculated={}",
-                            email.date, email.epoch, formatted_date
+                            email.date,
+                            email.epoch,
+                            formatted_date
                         );
                         // Always set the date field from epoch for consistency
                         email.date = Some(formatted_date);
@@ -149,10 +157,10 @@ impl From<MailingListResponse> for MailingListStats {
 
 #[cfg(test)]
 mod tests {
-    use crate::api::client::{SearchParams, MailingListResponse};
-    use crate::models::thread::{ThreadStructValue, Participant};
+    use crate::api::client::{MailingListResponse, SearchParams};
     use crate::models::email::Email;
     use crate::models::stats::MailingListStats;
+    use crate::models::thread::{Participant, ThreadStructValue};
     use std::collections::HashMap;
 
     #[test]
@@ -246,7 +254,7 @@ mod tests {
             list: response.list.clone(),
             domain: response.domain.clone(),
             emails: response.emails.clone(),
-            thread_struct: ThreadStructValue::Array(vec![]),  // Empty array is fine to recreate
+            thread_struct: ThreadStructValue::Array(vec![]), // Empty array is fine to recreate
             active_months: response.active_months.clone(),
         };
 

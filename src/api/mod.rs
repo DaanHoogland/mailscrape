@@ -18,8 +18,4 @@
  */
 pub mod client;
 
-pub use client::{
-    fetch_mailing_list_data,
-    MailingListResponse,
-    SearchParams,
-};
+pub use client::{MailingListResponse, SearchParams, fetch_mailing_list_data};

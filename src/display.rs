@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-use crate::models::{AnalyzedStats, MailingListStats};
 use crate::analysis::find_unanswered_emails;
-use chrono::{TimeZone};
+use crate::models::{AnalyzedStats, MailingListStats};
+use chrono::TimeZone;
 use std::borrow::Cow;
 
 #[derive(Default, Debug)]
@@ -79,20 +79,20 @@ impl DisplayConfig {
     }
 }
 
-pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats, config: &DisplayConfig) {
+pub fn display_analysis(
+    analyzed_stats: &AnalyzedStats,
+    stats: &MailingListStats,
+    config: &DisplayConfig,
+) {
     log::debug!("Starting to display analysis with config: {:?}", config);
 
     if config.show_header {
         println!("\nMailing List Statistics Summary");
         println!("==============================");
-        println!(
-            "List: {} ",
-            analyzed_stats.list_info.list_name
-        );
+        println!("List: {} ", analyzed_stats.list_info.list_name);
         println!(
             "Period: {} to {}",
-            analyzed_stats.list_info.period_from,
-            analyzed_stats.list_info.period_to
+            analyzed_stats.list_info.period_from, analyzed_stats.list_info.period_to
         );
     }
 
@@ -128,7 +128,10 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
 
     if config.show_daily_activity {
         println!("\nDaily Activity:");
-        println!("{:<12} {:>8} {:>14} {:>10}", "Date", "Emails", "Participants", "Threads");
+        println!(
+            "{:<12} {:>8} {:>14} {:>10}",
+            "Date", "Emails", "Participants", "Threads"
+        );
         println!("{}", "-".repeat(46));
 
         for (date, count) in &stats.active_months {
@@ -148,9 +151,7 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
         println!("\nAverages per day:");
         println!(
             "Emails: {:.2}\nParticipants: {:.2}\nThreads: {:.2}",
-            analyzed_stats.avg_emails,
-            analyzed_stats.avg_participants,
-            analyzed_stats.avg_threads
+            analyzed_stats.avg_emails, analyzed_stats.avg_participants, analyzed_stats.avg_threads
         );
     }
 
@@ -158,8 +159,7 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
         println!("{}", "-".repeat(32));
         println!(
             "Summary: {} emails in {} threads",
-            analyzed_stats.total_emails,
-            analyzed_stats.total_threads
+            analyzed_stats.total_emails, analyzed_stats.total_threads
         );
     }
 
@@ -174,15 +174,14 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
             for email in unanswered {
                 let date_str: Cow<'_, str> = match &email.date {
                     Some(date) => Cow::Borrowed(date.as_str()),
-                    None if email.epoch > 0 => {
-                        Cow::Owned(
-                            chrono::Utc.timestamp_opt(email.epoch, 0)
-                                .single()
-                                .map(|dt| dt.format("%Y-%m-%d").to_string())
-                                .unwrap_or_else(|| format!("Epoch: {}", email.epoch))
-                        )
-                    },
-                    _ => Cow::Borrowed("Unknown date")
+                    None if email.epoch > 0 => Cow::Owned(
+                        chrono::Utc
+                            .timestamp_opt(email.epoch, 0)
+                            .single()
+                            .map(|dt| dt.format("%Y-%m-%d").to_string())
+                            .unwrap_or_else(|| format!("Epoch: {}", email.epoch)),
+                    ),
+                    _ => Cow::Borrowed("Unknown date"),
                 };
 
                 if config.verbose {
@@ -193,10 +192,11 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
                     println!("Message-ID: {}", email.message_id);
                     println!();
                 } else {
-                    println!("- {} (from: {}, date: {})",
-                             email.subject,
-                             email.from,
-                             email.date.as_ref().unwrap_or(&"Unknown date".to_string())
+                    println!(
+                        "- {} (from: {}, date: {})",
+                        email.subject,
+                        email.from,
+                        email.date.as_ref().unwrap_or(&"Unknown date".to_string())
                     );
                 }
             }
