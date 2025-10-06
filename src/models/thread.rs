@@ -70,3 +70,127 @@ pub struct Participant {
     pub count: i32,
     pub gravatar: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*; // This imports everything from the parent module
+
+    #[test]
+    fn test_thread_struct_all_fields() {
+        let child = ThreadStruct {
+            tid: "child-123".to_string(),
+            subject: "Child Subject".to_string(),
+            tsubject: "Child Thread Subject".to_string(),
+            epoch: 1609459300,
+            nest: 1,
+            children: Vec::new(),
+        };
+
+        let thread = ThreadStruct {
+            tid: "parent-123".to_string(),
+            subject: "Parent Subject".to_string(),
+            tsubject: "Parent Thread Subject".to_string(),
+            epoch: 1609459200,
+            nest: 0,
+            children: vec![child.clone()],
+        };
+
+        // Test all fields to ensure they're used
+        assert_eq!(thread.tid, "parent-123");
+        assert_eq!(thread.subject, "Parent Subject");
+        assert_eq!(thread.tsubject, "Parent Thread Subject");
+        assert_eq!(thread.epoch, 1609459200);
+        assert_eq!(thread.nest, 0);
+        assert_eq!(thread.children.len(), 1);
+        assert_eq!(thread.children[0].tid, "child-123");
+    }
+
+    #[test]
+    fn test_thread_struct_value_array() {
+        let thread1 = ThreadStruct {
+            tid: "thread1".to_string(),
+            subject: "Thread 1".to_string(),
+            tsubject: "Thread 1 Subject".to_string(),
+            epoch: 1609459200,
+            nest: 0,
+            children: Vec::new(),
+        };
+
+        let thread2 = ThreadStruct {
+            tid: "thread2".to_string(),
+            subject: "Thread 2".to_string(),
+            tsubject: "Thread 2 Subject".to_string(),
+            epoch: 1609459300,
+            nest: 0,
+            children: Vec::new(),
+        };
+
+        let thread_value = ThreadStructValue::Array(vec![thread1.clone(), thread2.clone()]);
+
+        // Test methods
+        assert_eq!(thread_value.len(), 2);
+        let threads: Vec<&ThreadStruct> = thread_value.iter().collect();
+        assert_eq!(threads.len(), 2);
+        assert_eq!(threads[0].tid, "thread1");
+        assert_eq!(threads[1].tid, "thread2");
+
+        let thread_vec = thread_value.into_vec();
+        assert_eq!(thread_vec.len(), 2);
+        assert_eq!(thread_vec[0].tid, "thread1");
+        assert_eq!(thread_vec[1].tid, "thread2");
+    }
+
+    #[test]
+    fn test_thread_struct_value_map() {
+        let thread1 = ThreadStruct {
+            tid: "thread1".to_string(),
+            subject: "Thread 1".to_string(),
+            tsubject: "Thread 1 Subject".to_string(),
+            epoch: 1609459200,
+            nest: 0,
+            children: Vec::new(),
+        };
+
+        let thread2 = ThreadStruct {
+            tid: "thread2".to_string(),
+            subject: "Thread 2".to_string(),
+            tsubject: "Thread 2 Subject".to_string(),
+            epoch: 1609459300,
+            nest: 0,
+            children: Vec::new(),
+        };
+
+        let mut map = HashMap::new();
+        map.insert("key1".to_string(), thread1.clone());
+        map.insert("key2".to_string(), thread2.clone());
+
+        let thread_value = ThreadStructValue::Map(map);
+
+        // Test methods
+        assert_eq!(thread_value.len(), 2);
+        let threads: Vec<&ThreadStruct> = thread_value.iter().collect();
+        assert_eq!(threads.len(), 2);
+        assert!(threads.iter().any(|t| t.tid == "thread1"));
+        assert!(threads.iter().any(|t| t.tid == "thread2"));
+
+        let thread_vec = thread_value.into_vec();
+        assert_eq!(thread_vec.len(), 2);
+        assert!(thread_vec.iter().any(|t| t.tid == "thread1"));
+        assert!(thread_vec.iter().any(|t| t.tid == "thread2"));
+    }
+
+    #[test]
+    fn test_participant() {
+        let participant = Participant {
+            email: "user@example.com".to_string(),
+            name: "Test User".to_string(),
+            count: 5,
+            gravatar: "gravatar-hash".to_string(),
+        };
+
+        assert_eq!(participant.email, "user@example.com");
+        assert_eq!(participant.name, "Test User");
+        assert_eq!(participant.count, 5);
+        assert_eq!(participant.gravatar, "gravatar-hash");
+    }
+}

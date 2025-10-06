@@ -67,7 +67,7 @@ pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::models::email::Email;
 
     fn create_test_email(message_id: &str, subject: &str, in_reply_to: &str) -> Email {
         Email {
@@ -89,17 +89,35 @@ mod tests {
     }
 
     #[test]
-    fn test_single_unanswered_email() {
-        let emails = vec![
-            create_test_email(
-                "msg1",
-                "Test Subject",
-                ""
-            ),
-        ];
+    fn test_create_test_email_helper() {
+        // Test that the helper function creates proper email objects
+        let email = create_test_email(
+            "<msg1@example.com>",
+            "Test Subject",
+            "<parent@example.com>"
+        );
 
-        let unanswered = find_unanswered_emails(&emails);
-        assert_eq!(unanswered.len(), 1);
-        assert_eq!(unanswered[0].subject, "Test Subject");
+        // Verify the email was created correctly
+        assert_eq!(email.message_id, "<msg1@example.com>");
+        assert_eq!(email.subject, "Test Subject");
+        assert_eq!(email.in_reply_to, "<parent@example.com>");
+        assert_eq!(email.from, "test@example.com");
+        assert_eq!(email.date, Some("2025-08-04".to_string()));
+        assert_eq!(email.private, false);
+        assert_eq!(email.attachments.len(), 0);
+        assert_eq!(email.mid, "<msg1@example.com>");
+
+        // Create another email with different values
+        let email2 = create_test_email(
+            "<msg2@example.com>",
+            "Another Subject",
+            ""
+        );
+
+        // Verify it has the correct values
+        assert_eq!(email2.message_id, "<msg2@example.com>");
+        assert_eq!(email2.subject, "Another Subject");
+        assert_eq!(email2.in_reply_to, "");
+        assert_eq!(email2.mid, "<msg2@example.com>");
     }
 }

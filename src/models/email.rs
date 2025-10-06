@@ -43,3 +43,55 @@ pub struct Attachment {
     #[serde(default)]
     pub hash: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::models::email::{Email, Attachment};
+
+    #[test]
+    fn test_email_all_fields() {
+        let attachment = Attachment {
+            filename: "test.txt".to_string(),
+            content_type: "text/plain".to_string(),
+            size: 1024,
+            hash: "abc123".to_string(),
+        };
+
+        let email = Email {
+            message_id: "<12345@example.com>".to_string(),
+            subject: "Test Subject".to_string(),
+            in_reply_to: "<67890@example.com>".to_string(),
+            from: "sender@example.com".to_string(),
+            date: Some("2025-01-01".to_string()),
+            private: true,
+            attachments: vec![attachment.clone()],
+            epoch: 1609459200, // 2021-01-01 00:00:00 UTC
+            list: "test-list".to_string(),
+            gravatar: "gravatar-hash".to_string(),
+            list_raw: "test-list@example.com".to_string(),
+            id: "email-id-123".to_string(),
+            body: "This is the email body".to_string(),
+            mid: "mid-123".to_string(),
+        };
+
+        // Test all fields to ensure they're used
+        assert_eq!(email.message_id, "<12345@example.com>");
+        assert_eq!(email.subject, "Test Subject");
+        assert_eq!(email.in_reply_to, "<67890@example.com>");
+        assert_eq!(email.from, "sender@example.com");
+        assert_eq!(email.date, Some("2025-01-01".to_string()));
+        assert_eq!(email.private, true);
+        assert_eq!(email.attachments.len(), 1);
+        assert_eq!(email.attachments[0].filename, "test.txt");
+        assert_eq!(email.attachments[0].content_type, "text/plain");
+        assert_eq!(email.attachments[0].size, 1024);
+        assert_eq!(email.attachments[0].hash, "abc123");
+        assert_eq!(email.epoch, 1609459200);
+        assert_eq!(email.list, "test-list");
+        assert_eq!(email.gravatar, "gravatar-hash");
+        assert_eq!(email.list_raw, "test-list@example.com");
+        assert_eq!(email.id, "email-id-123");
+        assert_eq!(email.body, "This is the email body");
+        assert_eq!(email.mid, "mid-123");
+    }
+}
