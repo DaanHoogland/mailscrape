@@ -1,3 +1,21 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 use std::collections::HashMap;
 use reqwest;
 use serde::Deserialize;
@@ -60,11 +78,16 @@ pub async fn fetch_mailing_list_data(
     log::debug!("Raw response: {}", text);
 
     let data: MailingListResponse = serde_json::from_str(&text)?;
+    if let Some(email) = data.emails.first() {
+        log::debug!("First email example: epoch={}, date={:?}", email.epoch, email.date);
+    }
     Ok(data)
 }
 
 impl From<MailingListResponse> for MailingListStats {
     fn from(response: MailingListResponse) -> Self {
+        use chrono::{TimeZone, Utc};
+
         let (period_start, period_end) = if let Some(search_params) = response.search_params {
             let period_dates = search_params.d.split("|")
                 .map(|s| s.replace("dfr=", "").replace("dto=", ""))
@@ -77,6 +100,38 @@ impl From<MailingListResponse> for MailingListStats {
             (String::new(), String::new())
         };
 
+        // Create a vector of emails with dates filled in from the epoch
+        let emails_with_dates: Vec<Email> = response.emails
+            .into_iter()
+            .map(|mut email| {
+
+                // Always convert epoch to date string, whether date is None or not
+                if email.epoch > 0 {
+                    // Convert the epoch to a formatted date string
+                    if let Some(dt) = Utc.timestamp_opt(email.epoch, 0).single() {
+                        let formatted_date = dt.format("%Y-%m-%d").to_string();
+                        // Log both the original date and our calculated date
+                        log::debug!(
+                            "Email date: original={:?}, from epoch={}, calculated={}",
+                            email.date, email.epoch, formatted_date
+                        );
+                        // Always set the date field from epoch for consistency
+                        email.date = Some(formatted_date);
+                    } else {
+                        log::debug!("Failed to convert epoch {} to date", email.epoch);
+                    }
+                } else {
+                    // If epoch is not available and date is None, set a placeholder
+                    if email.date.is_none() {
+                        email.date = Some("Unknown date".to_string());
+                        log::debug!("No epoch or date available, setting placeholder");
+                    }
+                }
+
+                email
+            })
+            .collect();
+
         MailingListStats {
             total_emails: response.hits,
             total_participants: response.participants.len(),
@@ -85,7 +140,7 @@ impl From<MailingListResponse> for MailingListStats {
             period_end,
             list_name: response.list,
             domain: response.domain,
-            emails: response.emails,
+            emails: emails_with_dates,
             thread_struct: response.thread_struct,
             active_months: response.active_months,
         }
@@ -176,9 +231,6 @@ mod tests {
         assert_eq!(response.thread_struct.len(), 0);
         assert_eq!(response.active_months.get("2025-01"), Some(&10));
 
-        // Create a clone of response for conversion test
-
-        // Create a new search_params instance for the clone
         let search_params_clone = SearchParams {
             list: "test-list".to_string(),
             domain: "example.com".to_string(),

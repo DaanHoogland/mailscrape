@@ -1,5 +1,25 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 use crate::models::{AnalyzedStats, MailingListStats};
 use crate::analysis::find_unanswered_emails;
+use chrono::{TimeZone};
+use std::borrow::Cow;
 
 #[derive(Default, Debug)]
 pub struct DisplayConfig {
@@ -152,14 +172,32 @@ pub fn display_analysis(analyzed_stats: &AnalyzedStats, stats: &MailingListStats
         } else {
             let len = unanswered.len();
             for email in unanswered {
+                let date_str: Cow<'_, str> = match &email.date {
+                    Some(date) => Cow::Borrowed(date.as_str()),
+                    None if email.epoch > 0 => {
+                        Cow::Owned(
+                            chrono::Utc.timestamp_opt(email.epoch, 0)
+                                .single()
+                                .map(|dt| dt.format("%Y-%m-%d").to_string())
+                                .unwrap_or_else(|| format!("Epoch: {}", email.epoch))
+                        )
+                    },
+                    _ => Cow::Borrowed("Unknown date")
+                };
+
                 if config.verbose {
                     println!("Subject: {}", email.subject);
                     println!("From: {}", email.from);
-                    println!("Date: {:?}", email.date);
+                    println!("Date: {:?}", date_str);
+                    println!("Epoch: {}", email.epoch);
                     println!("Message-ID: {}", email.message_id);
                     println!();
                 } else {
-                    println!("- {} (from: {}, date: {:?})", email.subject, email.from, email.date);
+                    println!("- {} (from: {}, date: {})",
+                             email.subject,
+                             email.from,
+                             email.date.as_ref().unwrap_or(&"Unknown date".to_string())
+                    );
                 }
             }
             println!("\nTotal unanswered emails: {}", len);
