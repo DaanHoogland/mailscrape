@@ -3,7 +3,7 @@ Get statistics for an Apache mailing list from a pony list site
 
 <!-- Labels: -->
 [![Build Status](https://github.com/DaanHoogland/mailscrape/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/DaanHoogland/mailscrape/actions/workflows/build.yaml)
-[![License Check](https://github.com/apache/DaanHoogland/mailscrape/workflows/rat.yaml/badge.svg?branch=main)](https://github.com/DaanHoogland/mailscrape/actions/workflows/rat.yaml)
+[![License Check](https://github.com/DaanHoogland/mailscrape/actions/workflows/rat.yaml/badge.svg?branch=main)](https://github.com/DaanHoogland/mailscrape/actions/workflows/rat.yaml)
 [![codecov](https://codecov.io/gh/DaanHoogland/mailscrape/branch/main/graph/badge.svg)](https://codecov.io/gh/DaanHoogland/mailscrape)
 
 
