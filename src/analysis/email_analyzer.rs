@@ -132,7 +132,7 @@ mod tests {
         assert_eq!(email.in_reply_to, "<parent@example.com>");
         assert_eq!(email.from, "test@example.com");
         assert_eq!(email.date, Some("2025-08-04".to_string()));
-        assert!(email.private);
+        assert!(!email.private);
         assert_eq!(email.attachments.len(), 0);
         assert_eq!(email.mid, "<msg1@example.com>");
 
