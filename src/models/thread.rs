@@ -246,14 +246,17 @@ mod tests {
 
         // Create a non-empty Map variant
         let mut map = HashMap::new();
-        map.insert("key".to_string(), ThreadStruct {
-            tid: "thread-456".to_string(),
-            subject: "Another Thread".to_string(),
-            tsubject: "Another Thread".to_string(),
-            epoch: 1609459200,
-            nest: 0,
-            children: Vec::new(),
-        });
+        map.insert(
+            "key".to_string(),
+            ThreadStruct {
+                tid: "thread-456".to_string(),
+                subject: "Another Thread".to_string(),
+                tsubject: "Another Thread".to_string(),
+                epoch: 1609459200,
+                nest: 0,
+                children: Vec::new(),
+            },
+        );
         let non_empty_map = ThreadStructValue::Map(map);
         assert_eq!(non_empty_map.len(), 1);
         assert!(!non_empty_map.is_empty());
