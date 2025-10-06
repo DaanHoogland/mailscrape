@@ -98,7 +98,7 @@ mod tests {
         assert_eq!(email.in_reply_to, "<67890@example.com>");
         assert_eq!(email.from, "sender@example.com");
         assert_eq!(email.date, Some("2025-01-01".to_string()));
-        assert_eq!(email.private, true);
+        assert!(email.private);
         assert_eq!(email.attachments.len(), 1);
         assert_eq!(email.attachments[0].filename, "test.txt");
         assert_eq!(email.attachments[0].content_type, "text/plain");

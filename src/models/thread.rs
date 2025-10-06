@@ -54,6 +54,13 @@ impl ThreadStructValue {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        match self {
+            ThreadStructValue::Array(arr) => arr.is_empty(),
+            ThreadStructValue::Map(map) => map.is_empty(),
+        }
+    }
+
     pub fn from_vec(vec: Vec<ThreadStruct>) -> Self {
         ThreadStructValue::Array(vec)
     }
@@ -210,5 +217,45 @@ mod tests {
         assert_eq!(participant.name, "Test User");
         assert_eq!(participant.count, 5);
         assert_eq!(participant.gravatar, "gravatar-hash");
+    }
+
+    #[test]
+    fn test_thread_struct_value_is_empty() {
+        // Create an empty Array variant
+        let empty_array = ThreadStructValue::Array(vec![]);
+        assert_eq!(empty_array.len(), 0);
+        assert!(empty_array.is_empty());
+
+        // Create a non-empty Array variant
+        let thread = ThreadStruct {
+            tid: "thread-123".to_string(),
+            subject: "Thread Subject".to_string(),
+            tsubject: "Thread Subject".to_string(),
+            epoch: 1609459200,
+            nest: 0,
+            children: Vec::new(),
+        };
+        let non_empty_array = ThreadStructValue::Array(vec![thread]);
+        assert_eq!(non_empty_array.len(), 1);
+        assert!(!non_empty_array.is_empty());
+
+        // Create an empty Map variant
+        let empty_map = ThreadStructValue::Map(HashMap::new());
+        assert_eq!(empty_map.len(), 0);
+        assert!(empty_map.is_empty());
+
+        // Create a non-empty Map variant
+        let mut map = HashMap::new();
+        map.insert("key".to_string(), ThreadStruct {
+            tid: "thread-456".to_string(),
+            subject: "Another Thread".to_string(),
+            tsubject: "Another Thread".to_string(),
+            epoch: 1609459200,
+            nest: 0,
+            children: Vec::new(),
+        });
+        let non_empty_map = ThreadStructValue::Map(map);
+        assert_eq!(non_empty_map.len(), 1);
+        assert!(!non_empty_map.is_empty());
     }
 }

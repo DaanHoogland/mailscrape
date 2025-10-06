@@ -135,7 +135,7 @@ mod tests {
             domain: "example.com".to_string(),
             emails: vec![],
             thread_struct: ThreadStructValue::Array(vec![]),
-            active_months: active_months,
+            active_months,
         };
 
         let analyzed = analyze_stats(&stats);

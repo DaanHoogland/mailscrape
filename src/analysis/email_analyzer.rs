@@ -19,7 +19,7 @@
 use crate::models::Email;
 use std::collections::HashSet;
 
-pub fn find_unanswered_emails<'a>(emails: &'a [Email]) -> Vec<&'a Email> {
+pub fn find_unanswered_emails(emails: &[Email]) -> Vec<&Email> {
     let mut emails_with_replies = HashSet::new();
     log::debug!("Processing {} emails for threading", emails.len());
 
@@ -132,7 +132,7 @@ mod tests {
         assert_eq!(email.in_reply_to, "<parent@example.com>");
         assert_eq!(email.from, "test@example.com");
         assert_eq!(email.date, Some("2025-08-04".to_string()));
-        assert_eq!(email.private, false);
+        assert!(email.private);
         assert_eq!(email.attachments.len(), 0);
         assert_eq!(email.mid, "<msg1@example.com>");
 

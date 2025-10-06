@@ -99,7 +99,7 @@ impl From<MailingListResponse> for MailingListStats {
                 .map(|s| s.replace("dfr=", "").replace("dto=", ""))
                 .collect::<Vec<String>>();
             (
-                period_dates.get(0).unwrap_or(&String::new()).to_string(),
+                period_dates.first().unwrap_or(&String::new()).to_string(),
                 period_dates.get(1).unwrap_or(&String::new()).to_string(),
             )
         } else {
