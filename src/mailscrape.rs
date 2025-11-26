@@ -65,7 +65,8 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
+    logforth::starter_log::stderr().apply();
+
     let args = Args::parse();
 
     let json_data =
