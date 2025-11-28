@@ -78,11 +78,15 @@ pub async fn fetch_mailing_list_data(
     log::debug!("Raw response: {}", text);
 
     let data: MailingListResponse = serde_json::from_str(&text)?;
-    if let Some(email) = data.emails.first() {
-        log::debug!(
-            "First email example: epoch={}, date={:?}",
-            email.epoch,
-            email.date
+    log::debug!("Total emails received: {}", data.emails.len());
+    for (index, email) in data.emails.iter().enumerate() {
+        log::trace!(
+            "Email {}: date={:?}, subject={}, from={}, in_reply_to={}",
+            index,
+            email.date,
+            email.subject,
+            email.from,
+            email.in_reply_to
         );
     }
     Ok(data)
@@ -117,7 +121,7 @@ impl From<MailingListResponse> for MailingListStats {
                     if let Some(dt) = Utc.timestamp_opt(email.epoch, 0).single() {
                         let formatted_date = dt.format("%Y-%m-%d").to_string();
                         // Log both the original date and our calculated date
-                        log::debug!(
+                        log::trace!(
                             "Email date: original={:?}, from epoch={}, calculated={}",
                             email.date,
                             email.epoch,
