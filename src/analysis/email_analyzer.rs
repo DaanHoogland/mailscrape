@@ -60,7 +60,8 @@ pub fn find_unanswered_emails(emails: &[Email]) -> Vec<&Email> {
                 email.mid,
                 email.message_id,
                 parent_id,
-                email.subject);
+                email.subject
+            );
         }
     }
     log::debug!(
