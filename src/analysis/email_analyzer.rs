@@ -54,7 +54,13 @@ pub fn find_unanswered_emails(emails: &[Email]) -> Vec<&Email> {
                 .trim_start_matches('<')
                 .trim_end_matches('>');
             emails_with_replies.insert(parent_id.to_string());
-            log::debug!("Found that {} / {} / {} may be in reply to {}; subject: {}", email.id, email.mid, email.message_id, parent_id, email.subject);
+            log::debug!(
+                "Found that {} / {} / {} may be in reply to {}; subject: {}”,
+                email.id,
+                email.mid,
+                email.message_id,
+                parent_id,
+                email.subject);
         }
     }
     log::debug!(
@@ -73,7 +79,7 @@ pub fn find_unanswered_emails(emails: &[Email]) -> Vec<&Email> {
             // An email is considered unanswered if:
             // 1. It's not a reply itself (doesn't start with Re: and has no in_reply_to)
             // 2. No other email has replied to it
-            let is_not_reply = !email.subject.starts_with("Re: ");// && we are not sure about email.in_reply_to.is_empty();
+            let is_not_reply = !email.subject.starts_with("Re: “); // && we are not sure about email.in_reply_to.is_empty();
             let has_no_replies = !emails_with_replies.contains(message_id);
 
             let is_unanswered = is_not_reply && has_no_replies;
